@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>おかし分けゲーム（角丸しかくで分ける版 v2・初期8こ・描画修正）</title>
+<title>おかし分けゲーム</title>
 <style>
   :root{
     --bg:#f8fafc; --ink:#0f172a; --muted:#64748b; --good:#16a34a; --bad:#ef4444; --card:#fff; --grid:#e5e7eb; --accent:#2563eb;
@@ -43,7 +43,7 @@
 <body>
 <div class="wrap">
   <div class="card">
-    <h1>おかし分けゲーム（角丸しかくで分ける）</h1>
+    <h1>おかし分けゲーム（</h1>
     <div class="toolbar">
       <span class="pill">おかし：
         <select id="numSelect">
@@ -52,9 +52,9 @@
           <option value="16">16こ</option>
         </select>
       </span>
-      <button id="drawBtn">分ける（しかくをかく）</button>
+      <button id="drawBtn">分ける</button>
       <button id="undoBtn" class="ghost" disabled>やりなおし</button>
-      <button id="clearBtn" class="ghost">しかくをぜんぶ消す</button>
+      <button id="clearBtn" class="ghost">ぜんぶ消す</button>
       <button id="checkBtn" class="good">こたえあわせ</button>
       <button id="randomBtn" class="ghost">つぎのもんだい</button>
     </div>
@@ -79,7 +79,7 @@
       <section class="board">
         <div class="titleRow"><strong>学びのめあて</strong></div>
         <ul>
-          <li>「同じかずに分ける」と「分数（1/2, 1/4, …）」のつながりを体感しよう。</li>
+          <li>分けたじぶんのおかしを、分数を使ってあらわそう。</li>
           <li>しかくの数をふやすほど人数がふえる。中の数が「一人分」。</li>
           <li>ぜんぶで <span id="totalLabel">8</span> こ。<span id="fractionLine" class="mini"></span></li>
         </ul>

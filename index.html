@@ -43,7 +43,7 @@
 <body>
 <div class="wrap">
   <div class="card">
-    <h1>おかし分けゲーム（</h1>
+    <h1>おかし分けゲーム</h1>
     <div class="toolbar">
       <span class="pill">おかし：
         <select id="numSelect">
@@ -54,7 +54,7 @@
       </span>
       <button id="drawBtn">分ける</button>
       <button id="undoBtn" class="ghost" disabled>やりなおし</button>
-      <button id="clearBtn" class="ghost">ぜんぶ消す</button>
+      <button id="clearBtn" class="ghost">ぜんぶけす</button>
       <button id="checkBtn" class="good">こたえあわせ</button>
       <button id="randomBtn" class="ghost">つぎのもんだい</button>
     </div>
@@ -63,7 +63,7 @@
       <section class="board">
         <div class="titleRow">
           <strong>おかしの図</strong>
-          <span class="mini">ドラッグして角丸しかくをかきます（分けるモード中）</span>
+          <span class="mini">ドラッグしてかこいをかきます（分けるモード中）</span>
         </div>
         <div id="stage" class="stage" aria-label="おかしのステージ">
           <div id="snacks"></div>
@@ -73,7 +73,7 @@
         </div>
         <div class="counts" id="counts"></div>
         <div class="msg" id="message" aria-live="polite"></div>
-        <div class="note">ルール：<strong>しかくの数＝人数</strong>、<strong>しかくの中の個数＝一人分</strong>。どのしかくも同じ数になり、全部のおかしがちょうど分けられたら成功！</div>
+        <div class="note">ルール：<strong>しかくの数＝人数</strong>、<strong>かこいの中の個数＝一人分</strong>。どのしかくも同じ数になり、全部のおかしがちょうど分けられたらせいかい！</div>
       </section>
 
       <section class="board">
@@ -270,14 +270,14 @@
       msg.textContent = 'しかくをかいて 人数をきめよう。'; msg.className = 'msg bad'; return;
     }
     const {belong, overlap} = computeAssignments();
-    if(overlap){ msg.textContent = '同じおかしが 2つのしかくに入っています。重ならないようにしましょう。'; msg.className = 'msg bad'; return; }
+    if(overlap){ msg.textContent = '同じおかしが 2つの四角に入っています。重ならないようにしましょう。'; msg.className = 'msg bad'; return; }
     const perCounts = rects.map(()=>0);
     belong.forEach(ri => { if(ri>=0) perCounts[ri]++; });
     const unassigned = belong.filter(v=>v===-1).length;
     if(unassigned > 0){ msg.textContent = 'ぜんぶのおかしが 分けられていません。'; msg.className = 'msg bad'; return; }
     const first = perCounts[0];
     const allEqual = perCounts.every(n => n === first);
-    if(!allEqual){ msg.textContent = 'どのしかくも 同じ数に なるように分けよう。'; msg.className = 'msg bad'; return; }
+    if(!allEqual){ msg.textContent = 'どのかこいも 同じ数に なるように分けよう。'; msg.className = 'msg bad'; return; }
     msg.textContent = `せいかい！ 人数：${rects.length}人 ／ 1人分：${first}こ`; msg.className = 'msg good';
     fractionLine.textContent = `（${total}この 1/${rects.length} は ${first}こ）`;
   }
@@ -292,7 +292,7 @@
   // UI
   drawBtn.addEventListener('click', ()=>{
     drawMode = !drawMode;
-    drawBtn.textContent = drawMode ? '分ける（描画中）' : '分ける（しかくをかく）';
+    drawBtn.textContent = drawMode ? '分ける（分けるモード中）' : '分ける（しかくをかく）';
     drawBtn.classList.toggle('ghost', !drawMode);
   });
   undoBtn.addEventListener('click', ()=>{

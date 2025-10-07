@@ -279,7 +279,7 @@
   function announce(){
     updateCounts();
     if(isEqualShare()){
-      msg.textContent = 'せいかい！　みんな 同じかずに できたよ 👍';
+      msg.textContent = 'せいかい！　みんな 同じかずに できたよ';
       msg.className = 'msg good';
       frac.textContent = fractionLine();
     }else{
@@ -299,7 +299,7 @@
       msg.className = 'msg good';
       frac.textContent = fractionLine();
     }else{
-      msg.textContent = 'まだ よわいね。 もういちど たしかめよう。';
+      msg.textContent = 'もういちど たしかめよう。';
       msg.className = 'msg bad';
       frac.textContent = '';
     }
@@ -314,7 +314,7 @@
       t.parentElement.classList.add('active');
       setTimeout(()=>t.parentElement.classList.remove('active'), 900);
     });
-    msg.textContent = `ヒント：一人分は およそ ${per}こ`;
+    msg.textContent = `ヒント：一人分は ${per}こ`;
     msg.className = 'msg';
   });
 

@@ -73,13 +73,13 @@
         </div>
         <div class="counts" id="counts"></div>
         <div class="msg" id="message" aria-live="polite"></div>
-        <div class="note">ルール：<strong>しかくの数＝人数</strong>、<strong>かこいの中の個数＝一人分</strong>。どのしかくも同じ数になり、全部のおかしがちょうど分けられたらせいかい！</div>
+        <div class="note">ルール：<strong>かこった数＝人数</strong>、<strong>かこいの中の個数＝一人分</strong>。どのしかくも同じ数になり、全部のおかしがちょうど分けられたらせいかい！</div>
       </section>
 
       <section class="board">
         <div class="titleRow"><strong>学びのめあて</strong></div>
         <ul>
-          <li>分けたじぶんのおかしを、分数を使ってあらわそう。</li></li>
+          <li>分けたじぶんのおかしを、分数を使ってあらわそう。</div>
         <div class="titleRow"><strong>ルール</strong></div>
           <li>かこった数をふやすほど人数がふえる。かこった中の数が「一人分」。</li>
           <li>ぜんぶで <span id="totalLabel">8</span> こ。<span id="fractionLine" class="mini"></span></li>
@@ -311,7 +311,7 @@
   });
   numSel.addEventListener('change', setup);
 
-  // ★描画イベント（前版で抜けていたため復活）
+  // ★描画イベント
   stage.addEventListener('mousedown', e=>{ if(drawMode) startDraw(e.clientX, e.clientY); });
   window.addEventListener('mousemove', e=>{ if(drawMode) moveDraw(e.clientX, e.clientY); });
   window.addEventListener('mouseup', e=>{ if(drawMode) endDraw(); });

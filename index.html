@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>おかし分けゲーム（2人・4人）</title>
+<style>
+  :root{
+    --bg:#f7faf9;
+    --card:#ffffff;
+    --ink:#1f2937;
+    --accent:#16a34a;
+    --muted:#9ca3af;
+    --bad:#ef4444;
+    --grid:#e5e7eb;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN",
+    "BIZ UDPGothic","Noto Sans JP", sans-serif;
+    background:var(--bg); color:var(--ink);
+    display:flex; min-height:100svh; align-items:center; justify-content:center;
+  }
+  .wrap{width:min(960px, 96vw); padding:16px;}
+  .card{
+    background:var(--card); border-radius:18px; box-shadow:0 6px 20px rgba(0,0,0,.06);
+    padding:16px 16px 12px;
+  }
+  h1{font-size:clamp(18px, 2.6vw, 28px); margin:4px 0 8px; letter-spacing:.02em}
+  .bar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:6px 0 10px}
+  .bar > *{margin:0}
+  .pill{
+    display:inline-flex; align-items:center; gap:6px; border:1px solid var(--grid);
+    background:#fff; border-radius:999px; padding:6px 10px; font-size:15px;
+  }
+  select, button, input{font:inherit}
+  button{
+    border:none; border-radius:12px; padding:9px 14px; cursor:pointer;
+    background:var(--ink); color:#fff;
+  }
+  button.secondary{ background:#fff; color:var(--ink); border:1px solid var(--grid);}
+  button.good{ background:var(--accent);}
+  button.bad{ background:#ef4444;}
+  .area{
+    display:grid; grid-template-columns: 1fr;
+    gap:14px; margin-top:6px;
+  }
+  @media (min-width: 720px){
+    .area{grid-template-columns: 2fr 3fr;}
+  }
+  .board{
+    background:#fff; border:1px dashed var(--grid); border-radius:16px; padding:12px;
+  }
+  .grid{
+    display:grid; grid-template-columns: repeat(4, 58px); gap:10px;
+    justify-content:center; padding:8px;
+  }
+  @media (max-width: 420px){
+    .grid{grid-template-columns: repeat(4, 48px); gap:8px}
+  }
+  .cookie{
+    width:58px; height:58px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #6b7280 10px, #111827 12px, #333 13px, #111 15px, #2b2b2b 24px, #1b1b1b 30px);
+    box-shadow: inset 0 0 0 3px #0a0a0a, 0 3px 6px rgba(0,0,0,.25);
+    cursor:grab; user-select:none; touch-action:none;
+    display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:12px;
+  }
+  .cookie:active{cursor:grabbing; transform:scale(.98)}
+  .holders{
+    display:grid; gap:12px; grid-template-columns: repeat(2, 1fr);
+  }
+  .holder{
+    min-height:120px; border:2px dashed var(--grid); border-radius:14px; padding:10px;
+    background:linear-gradient(transparent 0, transparent calc(100% - 28px), #f3f4f6 calc(100% - 28px));
+    position:relative;
+  }
+  .holder.active{ border-color:#60a5fa; background:linear-gradient(transparent 0, transparent calc(100% - 28px), #eaf2ff calc(100% - 28px));}
+  .holder h3{
+    position:absolute; left:10px; bottom:4px; margin:0; font-size:14px; color:#6b7280; font-weight:600;
+  }
+  .holder .tray{
+    display:flex; flex-wrap:wrap; gap:8px; min-height:86px;
+  }
+  .counts{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin-top:6px;
+    color:#374151; font-weight:600;
+  }
+  .counts .tag{
+    background:#eef2ff; color:#3730a3; padding:6px 10px; border-radius:999px; font-weight:700;
+  }
+  .msg{
+    margin-top:10px; text-align:center; font-size:18px; font-weight:800;
+  }
+  .msg.good{ color:var(--accent)}
+  .msg.bad{ color:#ef4444}
+  .note{
+    font-size:14px; color:#6b7280; text-align:center; margin-top:4px;
+  }
+  .footer{
+    display:flex; gap:10px; justify-content:center; margin:10px 0 0;
+  }
+  .mini{
+    font-size:13px; color:#6b7280; margin-top:6px; text-align:center;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>おかし分けゲーム</h1>
+      <div class="bar">
+        <div class="pill">
+          おかし：<select id="numSelect" aria-label="個数をえらぶ">
+            <option value="8">8こ</option>
+            <option value="12" selected>12こ</option>
+            <option value="16">16こ</option>
+          </select>
+        </div>
+        <div class="pill">
+          人数：<select id="peopleSelect" aria-label="人数をえらぶ">
+            <option value="2" selected>2人</option>
+            <option value="4">4人</option>
+          </select>
+        </div>
+        <button id="newBtn" class="secondary" title="おなじ条件でもう一度">ならべる</button>
+        <button id="nextBtn">つぎのもんだい</button>
+      </div>
+
+      <div class="area">
+        <section class="board" aria-label="おかし">
+          <div style="display:flex; align-items:center; gap:10px; justify-content:space-between; padding:0 6px 4px;">
+            <strong>おかし</strong>
+            <small class="mini">ドラッグ（または クリック）して 人の ところへ</small>
+          </div>
+          <div id="pool" class="grid" role="list"></div>
+        </section>
+
+        <section class="board" aria-label="人のトレー">
+          <div style="display:flex; align-items:center; gap:10px; justify-content:space-between; padding:0 6px 4px;">
+            <strong>みんなで　同じかずに　分けよう</strong>
+            <button id="checkBtn" class="good" title="こたえあわせ">こたえあわせ</button>
+          </div>
+          <div id="holders" class="holders"></div>
+          <div class="counts" id="counts"></div>
+          <div id="message" class="msg" aria-live="polite"></div>
+          <div id="fraction" class="note"></div>
+          <div class="footer">
+            <button id="resetBtn" class="secondary">ぜんぶもどす</button>
+            <button id="hintBtn" class="secondary" title="すこしヒント">ヒント</button>
+          </div>
+        </section>
+      </div>
+
+      <p class="mini">※ 2人のときは <strong>1/2</strong>、4人のときは <strong>1/4</strong> をつかって分数でも考えよう。</p>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const pool = document.getElementById('pool');
+  const holdersWrap = document.getElementById('holders');
+  const countsEl = document.getElementById('counts');
+  const msg = document.getElementById('message');
+  const frac = document.getElementById('fraction');
+
+  const numSel = document.getElementById('numSelect');
+  const pplSel = document.getElementById('peopleSelect');
+  const newBtn = document.getElementById('newBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const hintBtn = document.getElementById('hintBtn');
+  const checkBtn = document.getElementById('checkBtn');
+
+  let cookieId = 0;
+
+  function makeCookie(){
+    const c = document.createElement('div');
+    c.className = 'cookie';
+    c.draggable = true;
+    c.dataset.id = ++cookieId;
+    c.setAttribute('role','listitem');
+    c.addEventListener('click', () => {
+      const trays = [...document.querySelectorAll('.holder .tray')];
+      const counts = trays.map(t => t.children.length);
+      const min = Math.min(...counts);
+      const idx = counts.indexOf(min);
+      trays[idx].appendChild(c);
+      announce();
+    });
+    c.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', c.dataset.id);
+      setTimeout(()=> c.style.opacity=.5, 0);
+    });
+    c.addEventListener('dragend', ()=> c.style.opacity=1);
+    return c;
+  }
+
+  function makeHolder(i){
+    const box = document.createElement('div');
+    box.className = 'holder';
+    box.innerHTML = `<div class="tray" aria-label="人${i+1}のトレー"></div><h3>${i+1}人め</h3>`;
+    const tray = box.querySelector('.tray');
+    ['dragenter','dragover'].forEach(type=>{
+      tray.addEventListener(type, e => {e.preventDefault(); box.classList.add('active')});
+    });
+    ['dragleave','drop'].forEach(type=>{
+      tray.addEventListener(type, e => {box.classList.remove('active')});
+    });
+    tray.addEventListener('drop', e =>{
+      e.preventDefault();
+      const id = e.dataTransfer.getData('text/plain');
+      const elm = document.querySelector(`.cookie[data-id="${id}"]`);
+      if(elm) tray.appendChild(elm);
+      announce();
+    });
+    return box;
+  }
+
+  function fillPool(n){
+    pool.innerHTML = '';
+    for(let i=0;i<n;i++) pool.appendChild(makeCookie());
+  }
+
+  function setupHolders(p){
+    holdersWrap.innerHTML = '';
+    holdersWrap.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    for(let i=0;i<p;i++) holdersWrap.appendChild(makeHolder(i));
+  }
+
+  function resetAll(){
+    const n = parseInt(numSel.value,10);
+    const p = parseInt(pplSel.value,10);
+    cookieId = 0;
+    fillPool(n);
+    setupHolders(p);
+    msg.textContent = '';
+    msg.className = 'msg';
+    frac.textContent = '';
+    updateCounts();
+  }
+
+  function updateCounts(){
+    const trays = [...document.querySelectorAll('.holder .tray')];
+    const poolLeft = pool.children.length;
+    const arr = trays.map((t,i)=>({i, c:t.children.length}));
+    countsEl.innerHTML = '';
+    arr.forEach(a=>{
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.textContent = `${a.i+1}人め：${a.c}こ`;
+      countsEl.appendChild(tag);
+    });
+    const poolTag = document.createElement('div');
+    poolTag.className = 'tag';
+    poolTag.textContent = `のこり：${poolLeft}こ`;
+    countsEl.appendChild(poolTag);
+  }
+
+  function isEqualShare(){
+    const trays = [...document.querySelectorAll('.holder .tray')];
+    const total = parseInt(numSel.value,10);
+    const p = parseInt(pplSel.value,10);
+    const per = total / p;
+    if (!Number.isInteger(per)) return false;
+    const allPlaced = trays.reduce((s,t)=> s + t.children.length, 0) === total;
+    const ok = trays.every(t => t.children.length === per);
+    return allPlaced && ok;
+  }
+
+  function fractionLine(){
+    const total = parseInt(numSel.value,10);
+    const p = parseInt(pplSel.value,10);
+    if (total % p !== 0) return '';
+    const unit = p === 2 ? '1/2' : (p === 4 ? '1/4' : `1/${p}`);
+    const per = total / p;
+    return `${total}この ${unit} は ${per}こ だね。`;
+  }
+
+  function announce(){
+    updateCounts();
+    if(isEqualShare()){
+      msg.textContent = 'せいかい！　みんな 同じかずに できたよ 👍';
+      msg.className = 'msg good';
+      frac.textContent = fractionLine();
+    }else{
+      msg.textContent = '';
+      msg.className = 'msg';
+      frac.textContent = '';
+    }
+  }
+
+  newBtn.addEventListener('click', resetAll);
+  resetBtn.addEventListener('click', resetAll);
+  numSel.addEventListener('change', resetAll);
+  pplSel.addEventListener('change', resetAll);
+  checkBtn.addEventListener('click', ()=>{
+    if(isEqualShare()){
+      msg.textContent = 'せいかい！';
+      msg.className = 'msg good';
+      frac.textContent = fractionLine();
+    }else{
+      msg.textContent = 'まだ よわいね。 もういちど たしかめよう。';
+      msg.className = 'msg bad';
+      frac.textContent = '';
+    }
+  });
+
+  hintBtn.addEventListener('click', ()=>{
+    const total = parseInt(numSel.value,10);
+    const p = parseInt(pplSel.value,10);
+    const per = Math.floor(total / p);
+    const trays = [...document.querySelectorAll('.holder .tray')];
+    trays.forEach((t)=>{
+      t.parentElement.classList.add('active');
+      setTimeout(()=>t.parentElement.classList.remove('active'), 900);
+    });
+    msg.textContent = `ヒント：一人分は およそ ${per}こ`;
+    msg.className = 'msg';
+  });
+
+  nextBtn.addEventListener('click', ()=>{
+    const Ns = [8,12,16];
+    const Ps = [2,4];
+    numSel.value = Ns[Math.floor(Math.random()*Ns.length)];
+    pplSel.value = Ps[Math.floor(Math.random()*Ps.length)];
+    resetAll();
+  });
+
+  resetAll();
+})();
+</script>
+</body>
+</html>

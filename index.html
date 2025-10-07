@@ -80,7 +80,7 @@
         <div class="titleRow"><strong>学びのめあて</strong></div>
         <ul>
           <li>分けたじぶんのおかしを、分数を使ってあらわそう。</li>
-          <li>しかくの数をふやすほど人数がふえる。中の数が「一人分」。</li>
+          <li>かこった数をふやすほど人数がふえる。かこった中の数が「一人分」。</li>
           <li>ぜんぶで <span id="totalLabel">8</span> こ。<span id="fractionLine" class="mini"></span></li>
         </ul>
       </section>
@@ -216,7 +216,7 @@
     const inside = countSnacksIn(temp);
     if(inside === 0){
       if (temp.node && temp.node.parentNode) temp.node.parentNode.removeChild(temp.node);
-      msg.textContent = '中におかしがない しかくは作りません。';
+      msg.textContent = 'かこった中におかしがありません。';
       msg.className = 'msg';
     }else{
       rects.push(temp);
@@ -254,23 +254,23 @@
     countsEl.innerHTML = '';
     per.forEach((n,i)=>{
       const tag = document.createElement('div');
-      tag.className='tag'; tag.textContent = `しかく${i+1}：${n}こ`; countsEl.appendChild(tag);
+      tag.className='tag'; tag.textContent = `かこい${i+1}：${n}こ`; countsEl.appendChild(tag);
     });
     const unassigned = belong.filter(v=>v===-1).length;
     const tag = document.createElement('div');
     tag.className='tag'; tag.textContent = `のこり：${unassigned}こ`; countsEl.appendChild(tag);
 
-    msg.textContent = overlap ? '同じおかしが 2つのしかくに入っています（重なり）' : msg.textContent;
+    msg.textContent = overlap ? '同じおかしを分けています（重なり）' : msg.textContent;
     msg.className = overlap ? 'msg bad' : msg.className;
   }
 
   function checkAnswer(){
     const total = snacks.length;
     if(rects.length === 0){
-      msg.textContent = 'しかくをかいて 人数をきめよう。'; msg.className = 'msg bad'; return;
+      msg.textContent = 'おかしをかこって、同じ数にわけよう。'; msg.className = 'msg bad'; return;
     }
     const {belong, overlap} = computeAssignments();
-    if(overlap){ msg.textContent = '同じおかしが 2つの四角に入っています。重ならないようにしましょう。'; msg.className = 'msg bad'; return; }
+    if(overlap){ msg.textContent = '同じおかしを分けています（重なり）。'; msg.className = 'msg bad'; return; }
     const perCounts = rects.map(()=>0);
     belong.forEach(ri => { if(ri>=0) perCounts[ri]++; });
     const unassigned = belong.filter(v=>v===-1).length;
@@ -292,7 +292,7 @@
   // UI
   drawBtn.addEventListener('click', ()=>{
     drawMode = !drawMode;
-    drawBtn.textContent = drawMode ? '分ける（分けるモード中）' : '分ける（しかくをかく）';
+    drawBtn.textContent = drawMode ? '分ける（分けるモード中）' : '分ける（かこいをかく）';
     drawBtn.classList.toggle('ghost', !drawMode);
   });
   undoBtn.addEventListener('click', ()=>{
